@@ -43,6 +43,7 @@ module Ratchetio
       }
 
       # todo: request data
+      byebug
 
       data[:server] = server_data
       data[:request] = request_data

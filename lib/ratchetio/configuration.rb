@@ -10,7 +10,8 @@ module Ratchetio
 
     attr_accessor :logger
 
-    DEFAULT_ENDPOINT = "http://submit.ratchet.io/api/1/item"
+    # DEFAULT_ENDPOINT = "http://submit.ratchet.io/api/1/item"
+    DEFAULT_ENDPOINT = "http://localhost:7007/api/v1/items"
 
     def initialize
       @endpoint = DEFAULT_ENDPOINT
