@@ -26,6 +26,13 @@ Ratchetio.configure do |config|
     conifg.access_token = 'YOUR_RATCHETIO_PROJECT_ACCESS_TOKEN'
 end
 ```
+Or, run the following command from your rails  root:
+
+```ruby
+$ rails generate ratchetio YOUR_RATCETIO_PROJECT_ACCESS_TOKEN
+```
+
+That will create the file `config/initializers/ratchetio.rb`, which holds the configuration values (currently just your access token) and is all you need to use Ratchet.io with Rails.
 
 ## Usage
 
