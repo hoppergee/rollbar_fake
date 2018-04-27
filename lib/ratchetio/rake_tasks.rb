@@ -46,7 +46,8 @@ namespace :ratchetio do
 
     Rails.application.routes_reloader.execute_if_updated
     Rails.application.routes.draw do
-      match 'verify' => 'application#vefiry', :as => 'verify'
+      # match 'verify' => 'application#vefiry', :as => 'verify'
+      get 'verify' => 'application#vefiry', :as => 'verify'
     end
 
     puts "Processing..."
