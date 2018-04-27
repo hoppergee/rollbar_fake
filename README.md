@@ -42,6 +42,15 @@ $ rake ratchetio:test
 
 This will raise an exception within a test request; if it works, you'll see a stacktrace in the console, and the exception will appear in the Ratchet.io dashboard.
 
+## Person tracking
+
+Ratchet will send information about the current user (called a "person" in Ratchet parlance) along with each error report, when available. This works by trying the `current_user` and `current_member` controller methods. The return value should be an object with an `id` property and, optionally, `username` and `email` properties.
+
+```ruby
+alias_method :my_user_method, :current_user
+helper_method :my_user_method
+```
+
 ## Usage
 
 This gem installs an exception handler into Rails. You don't need to do anything else for it to work.

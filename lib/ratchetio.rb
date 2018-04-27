@@ -19,7 +19,7 @@ module Ratchetio
       @configuration ||= Configuration.new
     end
 
-    def report_request_exception(env, exception, request_data)
+    def report_request_exception(env, exception, request_data, person_data)
       data = base_data
 
       # parse backtrace
@@ -47,6 +47,7 @@ module Ratchetio
 
       data[:server] = server_data
       data[:request] = request_data
+      data[:person] = person_data
 
       payload = build_payload(data)
       send_payload(payload)
@@ -119,7 +120,4 @@ module Ratchetio
     data
   end
 
-  def request_data
-    {}
-  end
 end
