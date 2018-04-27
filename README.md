@@ -34,6 +34,14 @@ $ rails generate ratchetio YOUR_RATCETIO_PROJECT_ACCESS_TOKEN
 
 That will create the file `config/initializers/ratchetio.rb`, which holds the configuration values (currently just your access token) and is all you need to use Ratchet.io with Rails.
 
+To confirm that it worked, run:
+
+```ruby
+$ rake ratchetio:test
+```
+
+This will raise an exception within a test request; if it works, you'll see a stacktrace in the console, and the exception will appear in the Ratchet.io dashboard.
+
 ## Usage
 
 This gem installs an exception handler into Rails. You don't need to do anything else for it to work.
