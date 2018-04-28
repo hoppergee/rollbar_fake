@@ -19,7 +19,45 @@ module Ratchetio
       @configuration ||= Configuration.new
     end
 
-    def report_request_exception(env, exception, request_data, person_data)
+    def report_exception(exception, request_data, person_data)
+      begin
+        data = exception_data(exception)        
+        if request_data
+          data[:request] = request_data
+        end
+        if person_data
+          data[:person] = person_data
+        end
+
+        payload = build_payload(data)
+        send_payload(payload)
+      rescue
+        logger.error "[Ratchet.io] Error reporting exception to Ratchet.io"
+      end
+    end
+
+    def report_message(message, level="info", extra_data={})
+      begin
+        data = base_data(level)
+
+        data[:body] = {
+          :message => {
+            :body => message.to_s
+          }
+        }
+        data[:body][:message].merge!(extra_data)
+        data[:server] = server_data
+
+        payload = build_payload(data)
+        send_payload(payload)
+      rescue
+        logger.error "[Ratchet.io] Error erporting message to Ratchet.io"
+      end
+    end
+
+    private
+
+    def exception_data(exception)
       data = base_data
 
       # parse backtrace
@@ -43,81 +81,69 @@ module Ratchetio
       }
 
       # todo: request data
-      byebug
-
       data[:server] = server_data
-      data[:request] = request_data
-      data[:person] = person_data
 
-      payload = build_payload(data)
-      send_payload(payload)
+      data
     end
-    def report_message()
-      # TODO
+
+    def logger
+      configuration.logger
     end
-  end
 
+    def send_payload(payload)
+      logger.info "[Ratchet.io] Sending payload"
 
-  private
+      uri = URI.parse(configuration.endpoint)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request.body = payload
+      response = http.request(request)
 
-  def logger
-    configuration.logger
-  end
-
-  def send_payload(payload)
-    logger.info "[Ratchet.io] Sending payload"
-
-    uri = URI.parse(configuration.endpoint)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request = Net::HTTP::Post.new(uri.request_uri)
-    request.body = payload
-    response = http.request(request)
-
-    if response.code != '200'
-      logger.info "[Ratchet.io] Success"
-    else
-      logger.warn "[Ratchet.io] Got unexpected status code from Ratchet.io api: " + response.code
-      logger.info "[Ratchet.io] Response"
-      logger.info response.body
+      if response.code != '200'
+        logger.info "[Ratchet.io] Success"
+      else
+        logger.warn "[Ratchet.io] Got unexpected status code from Ratchet.io api: " + response.code
+        logger.info "[Ratchet.io] Response"
+        logger.info response.body
+      end
     end
-  end
 
-  def build_payload(data)
-    payload = {
-      :access_token => configuration.access_token,
-      :data => data
-    }
-  end
-
-  def base_data(level="error")
-    config = configuration
-    {
-      :timestamp => Time.now.to_i,
-      :environment => config.environment,
-      :level => level,
-      :language => "ruby",
-      :framework => config.framework,
-      :notifier => {
-        :name => "ratchetio-gem",
-        :version => VERSION
+    def build_payload(data)
+      payload = {
+        :access_token => configuration.access_token,
+        :data => data
       }
-    }
-  end
-
-  def server_data
-    config = configuration
-    data = {
-      :host => Socket.gethostname
-    }
-    if config.root
-      data[:root] = config.root.to_s
     end
-    if config.branch
-      data[:branch] = config.branch
-    end
-    data
-  end
 
+    def base_data(level="error")
+      config = configuration
+      {
+        :timestamp => Time.now.to_i,
+        :environment => config.environment,
+        :level => level,
+        :language => "ruby",
+        :framework => config.framework,
+        :notifier => {
+          :name => "ratchetio-gem",
+          :version => VERSION
+        }
+      }
+    end
+
+    def server_data
+      config = configuration
+      data = {
+        :host => Socket.gethostname
+      }
+      if config.root
+        data[:root] = config.root.to_s
+      end
+      if config.branch
+        data[:branch] = config.branch
+      end
+      data
+    end
+  end
 end
