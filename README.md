@@ -46,7 +46,7 @@ This will raise an exception within a test request; if it works, you'll see a st
 
 To report a caught exception to Ratchet, simply call `Ratchetio.report_exception`:
 
-```
+```ruby
 begin
   foo = bar
 rescue Exception => e
