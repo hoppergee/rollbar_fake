@@ -46,7 +46,7 @@ This will raise an exception within a test request; if it works, you'll see a st
 
 To report a caught exception to Ratchet, simply call `Ratchetio.report_exception`:
 
-```
+```ruby
 begin
   foo = bar
 rescue Exception => e
@@ -56,7 +56,7 @@ end
 
 If you're reporting an exception in the context of a request and are in a controller, you can pass along the same request and person context as teh global exception handler, like so:
 
-```
+```ruby
 begin
   foo = bar
 rescue Exception => e
@@ -66,7 +66,7 @@ end
 
 You can also log individual messages:
 
-```
+```ruby
 # logs at the 'warning' level. all levels: debug, info ,warning, error, critical
 Ratchetio.report_message("Unexpected input", "warning")
 
