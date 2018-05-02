@@ -18,6 +18,9 @@ module Ratchetio
       @endpoint = DEFAULT_ENDPOINT
       @framework = 'Plain'
       @exception_level_filters = {
+        'ActiveRecord::RecordNotFound' => 'warning',
+        'AbstractController::ActionNotFound' => 'warning',
+        'ActionController::RoutingError' => 'warning'
       }
     end
 
